@@ -1,0 +1,136 @@
+﻿@page "/People/edit"
+@inject BlazorCRUDApp.Data.ApplicationDbContext DB
+@using BlazorCRUDApp.Data.Models
+@inject NavigationManager NavigationManager
+@using Microsoft.EntityFrameworkCore
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h4>Person</h4>
+<hr />
+@if (Person is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm method="post" Model="Person" OnValidSubmit="UpdatePerson" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <input type="hidden" name="Person.Id" value="@Person.Id" />
+                <div class="mb-3">
+                    <label for="firstname" class="form-label">FirstName:</label>
+                    <InputText id="firstname" @bind-Value="Person.FirstName" class="form-control" />
+                    <ValidationMessage For="() => Person.FirstName" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="lastname" class="form-label">LastName:</label>
+                    <InputText id="lastname" @bind-Value="Person.LastName" class="form-control" />
+                    <ValidationMessage For="() => Person.LastName" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email:</label>
+                    <InputText id="email" @bind-Value="Person.Email" class="form-control" />
+                    <ValidationMessage For="() => Person.Email" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="address" class="form-label">Address:</label>
+                    <InputText id="address" @bind-Value="Person.Address" class="form-control" />
+                    <ValidationMessage For="() => Person.Address" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="city" class="form-label">City:</label>
+                    <InputText id="city" @bind-Value="Person.City" class="form-control" />
+                    <ValidationMessage For="() => Person.City" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="region" class="form-label">Region:</label>
+                    <InputText id="region" @bind-Value="Person.Region" class="form-control" />
+                    <ValidationMessage For="() => Person.Region" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="postalcode" class="form-label">PostalCode:</label>
+                    <InputText id="postalcode" @bind-Value="Person.PostalCode" class="form-control" />
+                    <ValidationMessage For="() => Person.PostalCode" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="country" class="form-label">Country:</label>
+                    <InputText id="country" @bind-Value="Person.Country" class="form-control" />
+                    <ValidationMessage For="() => Person.Country" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Phone:</label>
+                    <InputText id="phone" @bind-Value="Person.Phone" class="form-control" />
+                    <ValidationMessage For="() => Person.Phone" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="fax" class="form-label">Fax:</label>
+                    <InputText id="fax" @bind-Value="Person.Fax" class="form-control" />
+                    <ValidationMessage For="() => Person.Fax" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="homepage" class="form-label">HomePage:</label>
+                    <InputText id="homepage" @bind-Value="Person.HomePage" class="form-control" />
+                    <ValidationMessage For="() => Person.HomePage" class="text-danger" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<div>
+    <a href="/people">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    public int Id { get; set; }
+
+    [SupplyParameterFromForm]
+    public Person? Person { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Person ??= await DB.Persons.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (Person is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more details, see https://aka.ms/RazorPagesCRUD.
+    public async Task UpdatePerson()
+    {
+        DB.Attach(Person!).State = EntityState.Modified;
+
+        try
+        {
+            await DB.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!PersonExists(Person!.Id))
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        NavigationManager.NavigateTo("/people");
+    }
+
+    bool PersonExists(int id)
+    {
+        return DB.Persons.Any(e => e.Id == id);
+    }
+}

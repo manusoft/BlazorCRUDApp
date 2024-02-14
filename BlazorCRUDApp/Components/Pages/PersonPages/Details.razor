@@ -1,0 +1,65 @@
+﻿@page "/people/details"
+@inject BlazorCRUDApp.Data.ApplicationDbContext DB
+@using BlazorCRUDApp.Data.Models
+@inject NavigationManager NavigationManager
+@using Microsoft.EntityFrameworkCore
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h4>Person</h4>
+    <hr />
+    @if (person is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">FirstName</dt>
+            <dd class="col-sm-10">@person.FirstName</dd>
+            <dt class="col-sm-2">LastName</dt>
+            <dd class="col-sm-10">@person.LastName</dd>
+            <dt class="col-sm-2">Email</dt>
+            <dd class="col-sm-10">@person.Email</dd>
+            <dt class="col-sm-2">Address</dt>
+            <dd class="col-sm-10">@person.Address</dd>
+            <dt class="col-sm-2">City</dt>
+            <dd class="col-sm-10">@person.City</dd>
+            <dt class="col-sm-2">Region</dt>
+            <dd class="col-sm-10">@person.Region</dd>
+            <dt class="col-sm-2">PostalCode</dt>
+            <dd class="col-sm-10">@person.PostalCode</dd>
+            <dt class="col-sm-2">Country</dt>
+            <dd class="col-sm-10">@person.Country</dd>
+            <dt class="col-sm-2">Phone</dt>
+            <dd class="col-sm-10">@person.Phone</dd>
+            <dt class="col-sm-2">Fax</dt>
+            <dd class="col-sm-10">@person.Fax</dd>
+            <dt class="col-sm-2">HomePage</dt>
+            <dd class="col-sm-10">@person.HomePage</dd>
+        </dl>
+        <div>
+            <a href="@($"/people/edit?id={person.Id}")">Edit</a> |
+            <a href="@($"/people")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    Person? person;
+
+    [SupplyParameterFromQuery]
+    public int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        person = await DB.Persons.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (person is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

@@ -1,0 +1,32 @@
+﻿@page "/people"
+@using Microsoft.AspNetCore.Components.QuickGrid
+@inject BlazorCRUDApp.Data.ApplicationDbContext DB
+@using BlazorCRUDApp.Data.Models
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="people/create">Create New</a>
+</p>
+
+<QuickGrid Class="table" Items="DB.Persons">
+    <PropertyColumn Property="person => person.FirstName" />
+    <PropertyColumn Property="person => person.LastName" />
+    <PropertyColumn Property="person => person.Email" />
+    <PropertyColumn Property="person => person.Address" />
+    <PropertyColumn Property="person => person.City" />
+    <PropertyColumn Property="person => person.Region" />
+    <PropertyColumn Property="person => person.PostalCode" />
+    <PropertyColumn Property="person => person.Country" />
+    <PropertyColumn Property="person => person.Phone" />
+    <PropertyColumn Property="person => person.Fax" />
+    <PropertyColumn Property="person => person.HomePage" />
+
+    <TemplateColumn Context="person">
+        <a href="@($"people/edit?id={person.Id}")">Edit</a> |
+        <a href="@($"people/details?id={person.Id}")">Details</a> |
+        <a href="@($"people/delete?id={person.Id}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>
